@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [22, 24]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Install server deps
+        run: npm install --prefix server --no-audit --no-fund
+
+      - name: Run server tests
+        run: npm test --prefix server
+
+      - name: Install client deps
+        run: npm install --prefix client --no-audit --no-fund
+
+      - name: Build client
+        run: npm run build --prefix client
